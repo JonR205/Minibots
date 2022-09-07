@@ -1,6 +1,7 @@
-import { FC, useState } from 'react'
+import { Children, FC, ReactNode, useState } from 'react'
 import reactLogo from './assets/react.svg'
-import './App.css'
+// import './App.css'
+import background from "./assets/radical.png";
 
 type Bracket = Record<string, Record<"a" | "b", string>>
 const warriors = ["Whiplash", "Saw blaze", "Duck", "Rotator", "Witch Doctor", "Rusty", "Hypershock", "BYE"]
@@ -21,7 +22,7 @@ const builtStartingBracket = (): Bracket => {
 }
 function App() {
   const [count, setCount] = useState(0)
-  const [bracketOne, setBracketOne] = useState<Bracket>({})
+  const [bracketOne, setBracketOne] = useState<Bracket | null>(null)
   const [bracketTwo, setBracketTwo] = useState<Bracket>({
     "0": { a: "", b: "" },
     "1": { a: "", b: "" },
@@ -29,17 +30,26 @@ function App() {
   const [bracketThree, setBracketThree] = useState<Bracket>({
     "0": { a: "", b: "" },
   })
+
+  if (!bracketOne) return (
+    <div>
+      <button onClick={() => {
+        setBracketOne(builtStartingBracket())
+      }}>
+        Let the bot tournament begin!
+      </button>
+    </div>
+
+  )
+
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", width: "1000px" }}>
+    <div>
+      <div style={{
+        display: "flex", justifyContent: "space-between", width: "1000px", height: "800px", alignItems: "center", backgroundImage: `url(${background})`
+        , backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat'
+      }}>
         <h1><Bracket bracket={bracketOne} winnerSelected={(winner, index) => {
           const newBracketOne = { ...bracketOne }
           const newBracketTwo = { ...bracketTwo }
@@ -76,19 +86,6 @@ function App() {
         <h1><Bracket bracket={bracketThree} winnerSelected={() => { }} />
         </h1>
       </div>
-      <div className="card">
-        <button onClick={() => {
-          setBracketOne(builtStartingBracket())
-        }}>
-          Let the bot tournament begin!
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   )
 }
@@ -101,18 +98,35 @@ export const Bracket: FC<BracketProps> = (props) => {
     const isDone = !warrior.a || !warrior.b
 
     return <div key={index} style={{ paddingBottom: "20px" }}>
-      <div onClick={() => {
-        if (isDone) return
+      <BracketBox>
+        <div onClick={() => {
+          if (isDone) return
 
-        props.winnerSelected(warrior.a, index)
-      }}>{warrior.a}</div>
-      <div onClick={() => {
-        if (isDone) return
+          props.winnerSelected(warrior.a, index)
+        }}>{warrior.a}</div>
+      </BracketBox>
+      <BracketBox>
+        <div onClick={() => {
+          if (isDone) return
 
-        props.winnerSelected(warrior.b, index)
-      }}>{warrior.b}</div>
+          props.winnerSelected(warrior.b, index)
+        }}>{warrior.b}</div>
+      </BracketBox>
     </div>
   })}</>
+}
+interface BracketBoxProps { children?: ReactNode }
+const BracketBox: FC<BracketBoxProps> = ({ children }) => {
+  return <div style={{
+    display: "flex", justifyContent: "center",
+    alignItems: "center", width: "200px", height: "50px", borderWidth: "5px",
+    borderColor: "#3f91a7", backgroundColor: "#306993", margin: "20px", color: "white",
+    borderStyle: "solid",
+    borderRadius: "5px",
+    boxShadow: '1px 2px 9px #0ff'
+  }} >
+    {children}
+  </div>
 }
 
 export default App
